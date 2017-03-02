@@ -50,7 +50,7 @@ public class Controller {
     @RequestMapping(value = "/filter", method = RequestMethod.GET)
     @ResponseBody
     public List<Tuple2<String,String>> filter(@Valid FilterCriteria criteria) throws Exception {
-        //todo:make RX
+        //todo:Add JAVA RX
         return topicService.filter(criteria);
     }
 }

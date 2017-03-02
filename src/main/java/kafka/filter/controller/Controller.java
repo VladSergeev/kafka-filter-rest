@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import scala.Tuple2;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static kafka.filter.Application.API;
@@ -47,7 +49,7 @@ public class Controller {
     })
     @RequestMapping(value = "/filter", method = RequestMethod.GET)
     @ResponseBody
-    public List<ConsumerRecord<String, String>> filter(FilterCriteria criteria) throws Exception {
+    public List<Tuple2<String,String>> filter(@Valid FilterCriteria criteria) throws Exception {
         //todo:make RX
         return topicService.filter(criteria);
     }

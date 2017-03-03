@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public class MessageCriteria implements Serializable {
+public class MessageCriteria{
     private String key;
     private String value;
 

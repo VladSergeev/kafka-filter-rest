@@ -1,5 +1,8 @@
 package kafka.filter.config;
 
+import kafka.filter.model.KafkaParameters;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +13,10 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static kafka.filter.Application.API;
 import static springfox.documentation.builders.PathSelectors.ant;
@@ -23,6 +30,9 @@ public class Config {
 
     @Value("${spark.master:local[1]}")
     private String master;
+
+    @Value("${kafka.bootstrap.servers:localhost:9092}")
+    private String kafkaServers;
 
     @Bean
     public JavaSparkContext context() {
@@ -42,6 +52,17 @@ public class Config {
                 .build();
     }
 
+    @Bean
+    public KafkaParameters kafkaParams() {
+        Map<String, Object> kafkaParams = new HashMap<>();
+        kafkaParams.put("bootstrap.servers", kafkaServers);
+        kafkaParams.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        kafkaParams.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        kafkaParams.put("group.id", "kafka_rest_filter_group");
+        kafkaParams.put("auto.offset.reset", "latest");
+        kafkaParams.put("enable.auto.commit", "false");
+        return new KafkaParameters(kafkaParams);
+    }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()

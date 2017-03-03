@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public class FilterCriteria implements Serializable {
+public class FilterCriteria{
     @NotNull(message = "Topic is not chosen!")
     private String topic;
     @NotNull(message = "Partition is not chosen!")

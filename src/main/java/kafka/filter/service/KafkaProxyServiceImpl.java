@@ -3,7 +3,6 @@ package kafka.filter.service;
 import kafka.filter.model.FilterCriteria;
 import kafka.filter.model.KafkaParameters;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.spark.api.java.JavaRDD;
@@ -12,13 +11,10 @@ import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
 import org.apache.spark.streaming.kafka010.OffsetRange;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
+import scala.Tuple2;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -37,9 +33,11 @@ public class KafkaProxyServiceImpl implements KafkaProxyService {
     private String kafkaServers;
 
 
-    public JavaRDD<ConsumerRecord<String, String>> getKafkaRDD(FilterCriteria filter) throws Exception {
+    public JavaRDD<Tuple2<String, String>> getKafkaRDD(FilterCriteria filter) throws Exception {
         OffsetRange[] arr = getOffsets(filter);
-        return KafkaUtils.createRDD(context, kafkaParams.getParams(), arr, LocationStrategies.PreferConsistent());
+        return KafkaUtils
+                .createRDD(context, kafkaParams.getParams(), arr, LocationStrategies.PreferConsistent())
+                .map(record -> new Tuple2<>((String) record.key(), (String) record.value()));
     }
 
     private OffsetRange[] getOffsets(FilterCriteria filter) throws Exception {
